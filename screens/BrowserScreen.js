@@ -1,5 +1,5 @@
 // screens/BrowserScreen.js
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect} from "react";
 import {
   View,
   TextInput,
@@ -7,14 +7,39 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { WebView } from "react-native-webview";
-import { Icon } from "react-native-elements";
+import { Icon } from "react-native-elements"; //https://oblador.github.io/react-native-vector-icons/#Entypo
 import constants from "../constants";
+//import ExtractFromOtherWeb from "../server/ExtractFromOtherWeb";
+import axios from 'axios';
+import cheerio from 'cheerio';
 
 const BrowserScreen = ({ route }) => {
   const { url } = route.params || { url: constants.URL.RECIPE };
   const webViewRef = useRef(null);
   const [searchVisible, setSearchVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [textFromWebsite, setTextFromWebsite] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(()=>{
+    const ExtractFromOtherWeb = async ()=> {
+      setLoading(true);
+      setError('');
+      try {
+        const response = await axios.get(constants.URL.RECIPE);
+        const loadedData = cheerio.load(response.data);
+        let doc = loadedData('body').text().replace(/\s+/g, ' ').trim();
+        setTextFromWebsite(doc);
+      } catch (err) {
+        setError(err.message);
+        console.log("error has occured: "+error);
+        console.log(err);
+      }
+      setLoading(false);
+    };
+    setTextFromWebsite(ExtractFromOtherWeb());
+  },[]);
 
   const handleSearchToggle = () => {
     setSearchVisible(!searchVisible);
@@ -22,8 +47,9 @@ const BrowserScreen = ({ route }) => {
   };
 
   const handleSearch = () => {
+    console.log(findOccurrences(textFromWebsite,searchQuery));
     webViewRef.current.injectJavaScript(`
-      // TODO: Implement handleSearch
+      
     `);
   };
 
@@ -38,6 +64,21 @@ const BrowserScreen = ({ route }) => {
       // TODO: Implement handlePrevious
     `);
   };
+
+  const findOccurrences = (text, word) => { 
+    const regex = new RegExp(`${word}`, 'gi'); // Create a regex to match the word with word boundaries
+    const matches = [];
+    let match;
+    
+    while ((match = regex.exec(text)) !== null) {
+      matches.push({
+        word: match[0],
+        index: match.index,
+      });
+    }
+  
+    return matches;
+  }
 
   return (
     <View style={styles.container}>
@@ -63,6 +104,13 @@ const BrowserScreen = ({ route }) => {
           >
             <Icon name="close" type="font-awesome" color="#fff" />
           </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleSearch}
+            style={styles.iconButton}
+          >
+            <Icon name="enter" type="antdesign" color="#fff" />
+          </TouchableOpacity>
+          
         </View>
       )}
 
