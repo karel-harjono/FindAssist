@@ -12,6 +12,7 @@ import constants from "../constants";
 //import ExtractFromOtherWeb from "../server/ExtractFromOtherWeb";
 import axios from 'axios';
 import cheerio from 'cheerio';
+import MyWebView from '../components/MyWebView';
 
 const BrowserScreen = ({ route }) => {
   const { url } = route.params || { url: constants.URL.RECIPE };
@@ -19,24 +20,28 @@ const BrowserScreen = ({ route }) => {
   const [searchVisible, setSearchVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [textFromWebsite, setTextFromWebsite] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  //const [loading, setLoading] = useState(false);
+ // const [error, setError] = useState('');
+  const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
+  const [currentSearchArray, setCurrentSearchArray] = useState([]);
+  const [currentScrollPosition, setCurrentScrollPosition] = useState(0);
 
   useEffect(()=>{
     const ExtractFromOtherWeb = async ()=> {
-      setLoading(true);
-      setError('');
+      //setLoading(true);
+      //setError('');
       try {
         const response = await axios.get(constants.URL.RECIPE);
         const loadedData = cheerio.load(response.data);
+        //the first part of the article (maybe the header) is skipped. I mean the short abstract at the beginning. This is not intentional. If this has to be fixed, it should be fixed.
         let doc = loadedData('body').text().replace(/\s+/g, ' ').trim();
         setTextFromWebsite(doc);
       } catch (err) {
-        setError(err.message);
+       // setError(err.message);
         console.log("error has occured: "+error);
         console.log(err);
       }
-      setLoading(false);
+     // setLoading(false);
     };
     setTextFromWebsite(ExtractFromOtherWeb());
   },[]);
@@ -47,10 +52,19 @@ const BrowserScreen = ({ route }) => {
   };
 
   const handleSearch = () => {
-    console.log(findOccurrences(textFromWebsite,searchQuery));
-    webViewRef.current.injectJavaScript(`
-      
-    `);
+    if(currentSearchArray.length>0){
+      if((currentSearchIndex+1)<currentSearchArray.length){
+        setCurrentSearchIndex(currentSearchIndex+1);
+        setCurrentScrollPosition(currentSearchArray[currentSearchIndex].index);
+        console.log("current search position: " + currentScrollPosition);
+      }
+    }else{
+      setCurrentSearchArray(findOccurrences(textFromWebsite,searchQuery));
+      console.log(currentSearchArray);
+      setCurrentScrollPosition(0);
+    }
+    // webViewRef.current.injectJavaScript(`
+    // `);
   };
 
   const handleNext = () => {
@@ -63,6 +77,16 @@ const BrowserScreen = ({ route }) => {
     webViewRef.current.injectJavaScript(`
       // TODO: Implement handlePrevious
     `);
+  };
+
+  const handleTextChange = (newText) => {
+    setSearchQuery(newText);
+    if(currentSearchArray.length >0 ){
+      //set search and scroll states to its initial state
+      setCurrentSearchArray([]);
+      setCurrentScrollPosition(0);
+      setCurrentSearchIndex(0);
+    }
   };
 
   const findOccurrences = (text, word) => { 
@@ -79,17 +103,17 @@ const BrowserScreen = ({ route }) => {
   
     return matches;
   }
-
+//<WebView source={{ uri: url }} style={styles.webview} ref={webViewRef} originWhitelist={['*']} onLoadEnd={handleLoadEnd}/>
   return (
     <View style={styles.container}>
-      <WebView source={{ uri: url }} style={styles.webview} ref={webViewRef} originWhitelist={['*']} />
+      <MyWebView url = {url} scrollToPosition={currentScrollPosition}/>
       {searchVisible && (
         <View style={styles.searchBar}>
           <TextInput
             style={styles.searchInput}
             placeholder="Search..."
             value={searchQuery}
-            onChangeText={setSearchQuery}
+            onChangeText={handleTextChange}
             onSubmitEditing={handleSearch}
           />
           <TouchableOpacity onPress={handlePrevious} style={styles.iconButton}>
