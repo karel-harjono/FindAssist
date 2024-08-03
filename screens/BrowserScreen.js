@@ -22,62 +22,47 @@ const BrowserScreen = ({ route }) => {
   const [searchedQuery, setSearchedQuery] = useState("");
   const [textFromWebsite, setTextFromWebsite] = useState('');
   const [testFromWebsite, setTestFromWebsite] = useState('');
-  //const [loading, setLoading] = useState(false);
- // const [error, setError] = useState('');
-  const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
-  const [currentSearchArray, setCurrentSearchArray] = useState([]);
-  const [currentScrollPosition, setCurrentScrollPosition] = useState(0);
+  const [isInQuery, toggleIsInQuery] = useState(false);
+  const [searchingNext, setSearchingNext] = useState(0);
 
   useEffect(()=>{
-    const ExtractFromOtherWeb = async ()=> {
-      //setLoading(true);
-      //setError('');
-      try {
-        const response = await axios.get(constants.URL.RECIPE);
-        setTestFromWebsite(response.data);
-        const loadedData = cheerio.load(response.data);
+    // const ExtractFromOtherWeb = async ()=> {
+    //   //setLoading(true);
+    //   //setError('');
+    //   try {
+    //     const response = await axios.get(constants.URL.RECIPE);
+    //     setTestFromWebsite(response.data);
+    //     const loadedData = cheerio.load(response.data);
         
-        //the first part of the article (maybe the header) is skipped. I mean the short abstract at the beginning. This is not intentional. If this has to be fixed, it should be fixed.
-        //let head = loadedData('header').text().replace(/\s+/g, ' ').trim();
-        let body = loadedData('body').text().replace(/\s+/g, ' ').trim();
-        //console.log(body);
-        //let doc = head + body;
-        setTextFromWebsite(body);
-      } catch (err) {
-       // setError(err.message);
-        console.log("error has occured: "+error);
-        console.log(err);
-      }
-     // setLoading(false);
-    };
-    setTextFromWebsite(ExtractFromOtherWeb());
-    //console.log(testFromWebsite);
-    //console.log("test");
+    //     //the first part of the article (maybe the header) is skipped. I mean the short abstract at the beginning. This is not intentional. If this has to be fixed, it should be fixed.
+    //     //let head = loadedData('header').text().replace(/\s+/g, ' ').trim();
+    //     let body = loadedData('body').text().replace(/\s+/g, ' ').trim();
+    //     //console.log(body);
+    //     //let doc = head + body;
+    //     setTextFromWebsite(body);
+    //   } catch (err) {
+    //    // setError(err.message);
+    //     console.log("error has occured: "+error);
+    //     console.log(err);
+    //   }
+    //  // setLoading(false);
+    // };
+    // setTextFromWebsite(ExtractFromOtherWeb());
   },[]);
 
   const handleSearchToggle = () => {
     setSearchVisible(!searchVisible);
     setSearchQuery("");
-    setSearchedQuery("");
+    reset();
   };
 
   const handleSearch = () => {
-    if(currentSearchArray.length>0){
-      if((currentSearchIndex+1)<currentSearchArray.length){
-        setCurrentSearchIndex(currentSearchIndex+1);
-        setCurrentScrollPosition(currentSearchArray[currentSearchIndex].index);
-        console.log("current search: " + currentScrollPosition);
-        console.log("current Search Array:");
-        console.log(currentSearchArray);
-      }
-    }else{
-      setCurrentSearchArray(findOccurrences(textFromWebsite,searchQuery));
-
-      setSearchedQuery(searchQuery);
-      setCurrentScrollPosition(0);
+    setSearchedQuery(searchQuery);
+    if(searchQuery.length>0 && !isInQuery){
+      toggleIsInQuery(true);
+    }else if(searchQuery.length>0 && isInQuery){
+      setSearchingNext(searchingNext+1);
     }
-    // webViewRef.current.injectJavaScript(`
-    // `);
   };
 
   const handleNext = () => {
@@ -94,33 +79,20 @@ const BrowserScreen = ({ route }) => {
 
   const handleTextChange = (newText) => {
     setSearchQuery(newText);
-    setSearchedQuery("");
-    if(currentSearchArray.length >0 ){
-      //set search and scroll states to its initial state
-      setCurrentSearchArray([]);
-      setCurrentScrollPosition(0);
-      setCurrentSearchIndex(0);
-    }
+    reset();
   };
 
-  const findOccurrences = (text, word) => { 
-    const regex = new RegExp(`${word}`, 'gi'); // Create a regex to match the word with word boundaries
-    const matches = [];
-    let match;
-    
-    while ((match = regex.exec(text)) !== null) {
-      matches.push({
-        word: match[0],
-        index: match.index,
-      });
-    }
-  
-    return matches;
+  const reset = ()=>{
+    setSearchedQuery("");
+    setSearchingNext(0);
+    toggleIsInQuery(false);
   }
+
+
 //<WebView source={{ uri: url }} style={styles.webview} ref={webViewRef} originWhitelist={['*']} onLoadEnd={handleLoadEnd}/>
   return (
     <View style={styles.container}>
-      <MyWebView url = {url} scrollToPosition={currentScrollPosition} searchedQuery = {searchedQuery} textFromWebsite={testFromWebsite}/>
+      <MyWebView url = {url} searchingNext={searchingNext} searchedQuery = {searchedQuery} isSearchOpen={searchVisible}/>
       {searchVisible && (
         <View style={styles.searchBar}>
           <TextInput
