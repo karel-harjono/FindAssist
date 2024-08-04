@@ -1,0 +1,35 @@
+Introduction
+Problem Context and Motivation
+In recent years, virtual assistants (VAs) have become ubiquitous in supporting a variety of daily tasks, from managing schedules to controlling smart home devices. These advancements have significantly enhanced the convenience and efficiency of performing routine activities. However, despite their widespread adoption, VAs' ability to support complex, multitasking scenarios, such as cooking, remains limited. This limitation is particularly pronounced in contexts that require precise and contextually aware interactions, such as following a recipe. The motivation behind this study stems from the need to address these limitations and enhance the usability of VAs in complex, hands-free environments.
+
+Cooking is a multifaceted activity that often requires simultaneous attention to various tasks, such as measuring ingredients, monitoring cooking times, and following detailed instructions. The use of VAs in this context could potentially alleviate the cognitive load on users by providing hands-free assistance. However, current commercial VAs often struggle with contextual misalignment, where they fail to understand the nuances of users' requests. This misalignment leads to inefficient and constrained interactions, causing frustration and reducing the overall utility of the technology. Addressing this gap is crucial for developing more effective and user-friendly VAs that can seamlessly integrate into complex tasks like cooking.
+
+What is Missing in Related Work
+Prior research has identified significant interaction challenges with commercial VAs in cooking scenarios. For instance, Auriol et al. (2019) highlighted that VAs frequently fail to provide contextually relevant responses, which disrupts the flow of the cooking process and increases the cognitive effort required from users. Similarly, Porcheron et al. (2018) emphasized that the lack of contextual understanding in VAs leads to repetitive and unnatural interactions, further complicating the user experience.
+
+A previous study conducted 16 cooking sessions with a wizarded, context-aware VA to address these challenges. The findings revealed that even with limited interactional capabilities, context awareness significantly improved interaction fluency and relevance (Porcheron et al., 2018). These sessions demonstrated that providing a constrained context of interaction during a task reduced conversational effort and increased the accuracy of VA responses. The study also highlighted the potential for context-aware interactions to enhance the cooking experience, emphasizing the need for sensitive and user-centric design approaches.
+
+Despite these insights, there remains a gap in quantitatively evaluating the impact of context-aware VAs on specific user experiences during cooking, particularly in the context of hands-free information retrieval. Most studies have focused on qualitative assessments and user perceptions, leaving a need for empirical evidence on how these technologies can improve task efficiency and user satisfaction.
+
+Your Contribution
+In this paper, we explored the idea of implementing a context-aware search agent to assist users in a hands-free cooking scenario. Our study aims to quantitatively evaluate the impact of this technology on user experience, specifically focusing on the process of looking up ingredients in a recipe while cooking. Unlike traditional string search functions, a context-aware agent can interpret and respond to queries within the document's context, potentially offering a more efficient and accurate way to find information.
+
+Study Summary and Key Findings
+Our study involved participants following a recipe with the option to use text-to-speech (TTS) technology in different modes: always on, always off, or selectively activated for specific sentences. We measured both the efficiency of the task, in terms of time taken and errors made, and the qualitative aspects, such as user satisfaction and perceived ease of use. The key findings from our study are as follows:
+
+Participants using the TTS feature completed the task faster than those who did not.
+The selective activation of TTS was found to be the most efficient mode, minimizing the time taken to look up information while reducing errors.
+User satisfaction ratings were higher for participants who used TTS, with the selective mode receiving the highest satisfaction scores.
+Main Contributions
+Quantitative evidence demonstrating the efficiency of context-aware TTS in hands-free cooking scenarios.
+Insights into user preferences for TTS usage modes, highlighting the benefits of selective activation.
+Enhanced understanding of how context-aware interactions can improve user experience in complex multitasking environments.
+Practical recommendations for the design and implementation of VAs in cooking applications.
+Background and Related Work
+Main Topics
+Our research focuses on three main topics: the limitations of current VAs in complex tasks, the potential benefits of context-aware interactions, and the specific challenges of implementing these technologies in hands-free cooking scenarios. We chose these topics because they directly address the core issues identified in prior research and align with our goal of improving VA usability in practical, real-world applications.
+
+Difference from Previous Work
+While previous studies have provided qualitative insights into the benefits of context-aware VAs, our work differs by offering quantitative data on their impact. We specifically address the gap in empirical evidence by measuring both efficiency and user satisfaction in a controlled experimental setting. Additionally, our focus on the selective activation of TTS as a user-controllable feature adds a novel dimension to the existing body of research, providing practical insights into how VAs can be tailored to better meet user needs.
+
+In conclusion, our study builds on the foundation of prior research while addressing critical gaps in the literature. By providing quantitative evidence and practical design recommendations, we contribute to the development of more effective and user-friendly VAs for complex multitasking scenarios, ultimately enhancing the overall user experience in hands-free environments.
