@@ -37,3 +37,7 @@ yarn-error.*
 
 # Ignore %ProgramData% folder on windows
 %ProgramdData%/
+
+venv
+
+Citations/
