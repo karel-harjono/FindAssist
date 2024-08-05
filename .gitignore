@@ -30,9 +30,14 @@ yarn-error.*
 
 # local env files
 .env*.local
+.env
 
 # typescript
 *.tsbuildinfo
 
 # Ignore %ProgramData% folder on windows
 %ProgramdData%/
+
+venv
+
+Citations/
