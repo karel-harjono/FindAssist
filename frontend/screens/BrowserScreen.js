@@ -6,12 +6,11 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { WebView } from "react-native-webview";
+import MyWebPage from "../components/MyWebPage";
 import { Icon } from "react-native-elements"; //https://oblador.github.io/react-native-vector-icons/#Entypo
 import constants from "../constants";
 //import ExtractFromOtherWeb from "../server/ExtractFromOtherWeb";
-import axios from 'axios';
-import cheerio from 'cheerio';
+//import SpeechComponent from "../components/SpeechComponent";
 
 const BrowserScreen = ({ route }) => {
   const { url } = route.params || { url: constants.URL.RECIPE };
@@ -19,26 +18,9 @@ const BrowserScreen = ({ route }) => {
   const [searchVisible, setSearchVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [textFromWebsite, setTextFromWebsite] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   useEffect(()=>{
-    const ExtractFromOtherWeb = async ()=> {
-      setLoading(true);
-      setError('');
-      try {
-        const response = await axios.get(constants.URL.RECIPE);
-        const loadedData = cheerio.load(response.data);
-        let doc = loadedData('body').text().replace(/\s+/g, ' ').trim();
-        setTextFromWebsite(doc);
-      } catch (err) {
-        setError(err.message);
-        console.log("error has occured: "+error);
-        console.log(err);
-      }
-      setLoading(false);
-    };
-    setTextFromWebsite(ExtractFromOtherWeb());
+
   },[]);
 
   const handleSearchToggle = () => {
@@ -82,7 +64,7 @@ const BrowserScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <WebView source={{ uri: url }} style={styles.webview} ref={webViewRef} originWhitelist={['*']} />
+      <MyWebPage style={styles.test}/>
       {searchVisible && (
         <View style={styles.searchBar}>
           <TextInput
@@ -127,6 +109,9 @@ const BrowserScreen = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
+  test:{
+    flex:1,
+  },
   container: {
     flex: 1,
   },
