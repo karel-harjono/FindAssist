@@ -63,8 +63,12 @@ async function extractTextFromUrl(url) {
 // env vars: PINECONE_API_KEY and PINECONE_ENVIRONMENT which come from
 // the Pinecone dashboard at https://app.pinecone.io
 
-const pinecone = new Pinecone();
+// catch an exception of when the environment variables are not set
 
+if (!process.env.PINECONE_INDEX || !process.env.PINECONE_API_KEY || !process.env.OPENAI_API_KEY) {
+  throw new Error("API keys requried is missing: PINECONE_INDEX || PINECONE_API_KEY || OPENAI_API_KEY");
+}
+const pinecone = new Pinecone();
 const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX);
 const namespace = "ns1";
 
@@ -88,13 +92,13 @@ const splitter = new RecursiveCharacterTextSplitter({
 const url = 'https://www.maangchi.com/recipe/dububuchim-yangnyeomjang';
 
 const storeDocs = async (text) => {
-    const docs = await splitter.createDocuments([text]);
-    await PineconeStore.fromDocuments(docs, embedder, {
-      pineconeIndex,
-      namespace,
-      maxConcurrency: 5, // Maximum number of batch requests to allow at once. Each batch is 1000 vectors.
-    });
-    console.log("Stored documents in Pinecone");
+  const docs = await splitter.createDocuments([text]);
+  await PineconeStore.fromDocuments(docs, embedder, {
+    pineconeIndex,
+    namespace,
+    maxConcurrency: 5, // Maximum number of batch requests to allow at once. Each batch is 1000 vectors.
+  });
+  console.log("Stored documents in Pinecone");
 };
 
 const queryDocs = async (query) => {
@@ -127,4 +131,4 @@ async function main() {
 
 main();
 // queryDocs("how long should this be in the oven for?");
-// queryDocs("What ingredients are needed?");
+queryDocs("What ingredients are needed?");
