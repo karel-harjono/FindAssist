@@ -16,7 +16,7 @@ router.post('/transcribe', async (req, res) => {
         },
         config: {
             encoding: 'LINEAR16', // Adjust based on your audio format
-            sampleRateHertz: 8000, // Adjust based on your audio format
+            sampleRateHertz: 48000, // Adjust based on your audio format
             languageCode: 'en-US',
         },
     };

@@ -5,7 +5,7 @@ import * as FileSystem from 'expo-file-system';
 //import fileExists from "./fileExists";
 import { Asset } from 'expo-asset';
 import { Audio } from 'expo-av';
-import audioFile from '../assets/test1.amr'
+import audioFile from '../assets/test1.wav'
 
 const SpeechComponent = () => {
   const findMP3 = async ()=>{
