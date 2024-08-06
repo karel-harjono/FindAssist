@@ -41,3 +41,8 @@ yarn-error.*
 venv
 
 Citations/
+
+
+cosc341google.json
+./backend/cosc341google.json
+cosc341-431623-a362d3903324.json

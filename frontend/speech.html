@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Speech Recognition</title>
+</head>
+<body>
+  <div>Test.....</div>
+  <script>
+    function speech() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.continuous = true;
+
+      recognition.onresult = function(event) {
+        const transcript = Array.from(event.results)
+          .map(result => result[0])
+          .map(result => result.transcript)
+          .join('');
+          indow.ReactNativeWebView.postMessage('testing?');
+        if (transcript.toLowerCase().includes('ok bob')) {
+          window.ReactNativeWebView.postMessage('Hello! How can I help you?');
+        }
+      };
+
+      recognition.start();
+    }
+    setTimeout(() => {
+      speech();
+  }, 1000);
+    
+  </script>
+</body>
+</html>
