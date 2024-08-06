@@ -20,7 +20,6 @@ router.post('/transcribe', async (req, res) => {
             languageCode: 'en-US',
         },
     };
-    console.log("transcring");
     try {
         
         const [response] = await client.recognize(request);
@@ -30,9 +29,6 @@ router.post('/transcribe', async (req, res) => {
             const transcript = response.results
             .map(result => result.alternatives[0].transcript)
             .join('\n');
-            console.log(`Transcription: ${response.results}`);
-            console.log(`test: ${response.results
-                .map(result => result.alternatives[0])}`)
             res.json({ transcript });
         }
         
