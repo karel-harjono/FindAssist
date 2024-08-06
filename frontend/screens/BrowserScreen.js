@@ -96,7 +96,7 @@ const BrowserScreen = ({ route }) => {
           >
             <Icon name="enter" type="antdesign" color="#fff" />
           </TouchableOpacity>
-          
+
         </View>
       )}
 
@@ -128,8 +128,8 @@ const styles = StyleSheet.create({
     right: 40,
     backgroundColor: constants.THEME.PRIMARY_COLOR,
     borderRadius: 50,
-    width: 80,
-    height: 80,
+    width: 60,
+    height: 60,
     justifyContent: "center",
     alignItems: "center",
     elevation: 8,

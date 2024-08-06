@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useRef} from 'react';
-import readmp3 from "./readmp3";
 import * as FileSystem from 'expo-file-system';
 //import fileExists from "./fileExists";
 import { Asset } from 'expo-asset';
 import { Audio } from 'expo-av';
 import audioFile from '../assets/test1.wav'
 
-const handleGoogleAPI = ()=>{
+const handleGoogleAPI = (audioURI)=>{
     const findMP3 = async ()=>{
         try{
           const asset = Asset.fromModule(audioFile);
@@ -60,13 +58,25 @@ const handleGoogleAPI = ()=>{
             return null;
         }
     };
-    
-    const handleAudioUpload = async () => {
+    const convertAudio = async (fileUri) => {
+        try {
+            const audioContent = await FileSystem.readAsStringAsync(fileUri, {
+                encoding: FileSystem.EncodingType.Base64,
+            });
+            return audioContent;
+        } catch (error) {
+            console.error('Error reading file:', error);
+            throw error;
+        }
+    };
+
+    const handleAudioUpload = async (audioURI) => {
       // Convert audio file to base64 or any required format
       try {
-          const filePath = await findMP3();
-          if(filePath != null){ //change this later
-            const audioContent = await readmp3(filePath);
+          //const filePath = await findMP3();
+          //if(filePath != null){ //change this later
+          if(audioURI !=null){  
+            const audioContent = await convertAudio(audioURI);
             const transcript = await transcribeAudio(audioContent);
             console.log('Transcript:', transcript);
           }
@@ -77,7 +87,7 @@ const handleGoogleAPI = ()=>{
     };
 
 
-    handleAudioUpload();
+    handleAudioUpload(audioURI);
       
 }
 
