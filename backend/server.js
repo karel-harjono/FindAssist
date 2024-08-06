@@ -10,8 +10,25 @@ import cheerio from 'cheerio';
 import { writeFile } from 'fs/promises';
 
 const pdfPath = 'recipe.pdf';
-
+import express from 'express';
 import { getDocument } from "pdfjs-dist";
+import googleServer from './google-server.js';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+
+const app = express();
+const port = 3001;
+app.use(cors());
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));  // For URL-encoded data
+app.use('/speech', googleServer);
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+
+app.get('/', (req, res) => {
+  res.send('Welcome to the Speech-to-Text API!');
+});
 
 async function getTextFromPDF(path) {
     let doc = await getDocument(path).promise;

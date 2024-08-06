@@ -10,7 +10,7 @@ import MyWebPage from "../components/MyWebPage";
 import { Icon } from "react-native-elements"; //https://oblador.github.io/react-native-vector-icons/#Entypo
 import constants from "../constants";
 //import ExtractFromOtherWeb from "../server/ExtractFromOtherWeb";
-//import SpeechComponent from "../components/SpeechComponent";
+import SpeechComponent from "../components/SpeechComponent";
 
 const BrowserScreen = ({ route }) => {
   const { url } = route.params || { url: constants.URL.RECIPE };
@@ -61,10 +61,14 @@ const BrowserScreen = ({ route }) => {
   
     return matches;
   }
-
+/*
+<MyWebPage style={styles.test}/>
+      <SpeechComponent/>
+*/
   return (
     <View style={styles.container}>
       <MyWebPage style={styles.test}/>
+      <SpeechComponent/>
       {searchVisible && (
         <View style={styles.searchBar}>
           <TextInput
