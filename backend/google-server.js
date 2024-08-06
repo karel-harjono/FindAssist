@@ -25,7 +25,7 @@ router.post('/transcribe', async (req, res) => {
             content: audioContent,
         },
         config: {
-            encoding: 'LINEAR16', // Adjust based on your audio format
+            encoding: 'AMR', // Adjust based on your audio format
             sampleRateHertz: 8000, //FOR .amr files
             languageCode: 'en-US',
         },
