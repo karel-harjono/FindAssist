@@ -8,7 +8,7 @@ import { recordingOptions } from '../audioconstants;';
 import handleGoogleAPI from './handleGoogleApi';
 import * as FileSystem from 'expo-file-system';
 
-const SILENCE_THRESHOLD = 0.5; // Adjust this value based on your needs
+const audioSizeLimit = 20000;
 
 
 const RecordVoice = () =>{
@@ -17,8 +17,8 @@ const RecordVoice = () =>{
   const recordingRef = useRef(null);
   const soundRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
-
-  async function startRecording() {
+  var interval1;
+   async function startRecording() {
     try {
       await Audio.requestPermissionsAsync();
       await Audio.setAudioModeAsync({
@@ -30,7 +30,6 @@ const RecordVoice = () =>{
         recordingOptions,
         (status) => console.log(status)
       );
-      console.log("settingIsRecording");
       setIsRecording(true);
       setRecording(recording);
       recordingRef.current = recording;
@@ -65,21 +64,20 @@ const RecordVoice = () =>{
   }
   const checkRecordingStatus = async () => {
     try {
-      console.log("checking");
-      const isSilent = await isAudioSilent(recordingRef.current.getURI());
-      if (!isSilent) {
-        console.log("not silent");
-        stopRecording();
-        //await processAudio(recording.current);
-      }else{
-        console.log("silent");
-        stopRecording();
-      }
-    }catch(err){
 
+      await checkAudioFileSize(recordingRef.current.getURI());
+      const transcript = await handleGoogleAPI(recordingRef.current.getURI());
+      if((transcript.includes("ok")||transcript.includes("okay"))&&transcript.includes("Bob")){
+        stopRecording();
+        clearInterval(interval1);
+      }
+      console.log("record transcript:"+transcript);
+    }catch(err){
+      console.log(err);
     }
   }
-  const isAudioSilent = async (recordingURI) => {
+
+  const checkAudioFileSize = async (recordingURI) => {
     try {
       const fileInfo = await FileSystem.getInfoAsync(recordingURI);
       if (!fileInfo.exists) {
@@ -94,31 +92,32 @@ const RecordVoice = () =>{
 
       // Simple silence detection (file size check)
       const fileSize = audioData.length;
-      console.log(fileSize);
-      if (fileSize < 8000) { // Example threshold; adjust as needed silent audio usually tends to be around 6000.
-        return true;
+      if(fileSize > 20000){
+        stopRecording(); //prevent memory explosion.
       }
 
-      // Additional processing can be added here for more accurate silence detection
-
-      return false;
     } catch (error) {
       console.error('Failed to analyze audio', error);
       return false;
     }
   };
   useEffect(()=>{
-    if(!isRecording){
-      startRecording();
-      const interval = setInterval(() => {
-        checkRecordingStatus();
-      }, 3000);
-    }
-  },[isRecording]);
+    startRecording();
+    const interval = setInterval(() => {
+        checkRecordingStatus()
+    }, 3000);
+    const timeout = setTimeout(() => {
+      clearInterval(interval);
+      console.log('Interval cleared after 10 seconds');
+      if(recording)stopRecording();
+    }, 10000);
+    interval1 = interval;
+  },[]);
 
 
 
   useEffect(() => {
+
     return soundRef.current
       ? () => {
           soundRef.current.unloadAsync();

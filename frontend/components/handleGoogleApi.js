@@ -4,7 +4,9 @@ import { Asset } from 'expo-asset';
 import { Audio } from 'expo-av';
 import audioFile from '../assets/test1.wav'
 
-const handleGoogleAPI = (audioURI)=>{
+const handleGoogleAPI = async (audioURI)=>{
+  var transcript1 = '';
+
     const findMP3 = async ()=>{
         try{
           const asset = Asset.fromModule(audioFile);
@@ -78,7 +80,10 @@ const handleGoogleAPI = (audioURI)=>{
           if(audioURI !=null){  
             const audioContent = await convertAudio(audioURI);
             const transcript = await transcribeAudio(audioContent);
-            console.log('Transcript:', transcript);
+            //console.log('Transcript:', transcript);
+            return transcript;
+          }else{
+            return null;
           }
       } catch (error) {
           console.error('Error checking file existence:', error);
@@ -87,8 +92,7 @@ const handleGoogleAPI = (audioURI)=>{
     };
 
 
-    handleAudioUpload(audioURI);
-      
+    return handleAudioUpload(audioURI);
 }
 
 export default handleGoogleAPI;
