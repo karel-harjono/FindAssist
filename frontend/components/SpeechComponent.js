@@ -3,14 +3,14 @@ import { View, Text, Button, StyleSheet,  TouchableOpacity } from 'react-native'
 import handleGoogleAPI from './handleGoogleApi';
 import constants from "../constants";
 import RecordVoice from "./RecordVoice";
-
+import ContinuousSpeechRecognition from "./ContinuousSpeechRecognition";
 const SpeechComponent = () => {
 
 
 useEffect(()=>{
   //handleGoogleAPI();
 },[]);
-
+//      
   return (
     <View >
       <RecordVoice/>

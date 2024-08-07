@@ -6,12 +6,17 @@ import constants from "../constants";
 import { Icon } from "react-native-elements";
 import { recordingOptions } from '../audioconstants;';
 import handleGoogleAPI from './handleGoogleApi';
+import * as FileSystem from 'expo-file-system';
+
+const SILENCE_THRESHOLD = 0.5; // Adjust this value based on your needs
+
 
 const RecordVoice = () =>{
   const [recording, setRecording] = useState(null);
   const [recordedUri, setRecordedUri] = useState(null);
   const recordingRef = useRef(null);
   const soundRef = useRef(null);
+  const [isRecording, setIsRecording] = useState(false);
 
   async function startRecording() {
     try {
@@ -25,7 +30,8 @@ const RecordVoice = () =>{
         recordingOptions,
         (status) => console.log(status)
       );
-
+      console.log("settingIsRecording");
+      setIsRecording(true);
       setRecording(recording);
       recordingRef.current = recording;
     } catch (err) {
@@ -39,6 +45,7 @@ const RecordVoice = () =>{
       const uri = recordingRef.current.getURI();
       setRecordedUri(uri);
       setRecording(null);
+      setIsRecording(false);
     } catch (err) {
       console.error('Failed to stop recording', err);
     }
@@ -56,6 +63,60 @@ const RecordVoice = () =>{
       console.error('Failed to play sound', err);
     }
   }
+  const checkRecordingStatus = async () => {
+    try {
+      console.log("checking");
+      const isSilent = await isAudioSilent(recordingRef.current.getURI());
+      if (!isSilent) {
+        console.log("not silent");
+        stopRecording();
+        //await processAudio(recording.current);
+      }else{
+        console.log("silent");
+        stopRecording();
+      }
+    }catch(err){
+
+    }
+  }
+  const isAudioSilent = async (recordingURI) => {
+    try {
+      const fileInfo = await FileSystem.getInfoAsync(recordingURI);
+      if (!fileInfo.exists) {
+        console.error('Audio file does not exist');
+        return false;
+      }
+
+      // Read file as base64
+      const audioData = await FileSystem.readAsStringAsync(recordingURI, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      // Simple silence detection (file size check)
+      const fileSize = audioData.length;
+      console.log(fileSize);
+      if (fileSize < 8000) { // Example threshold; adjust as needed silent audio usually tends to be around 6000.
+        return true;
+      }
+
+      // Additional processing can be added here for more accurate silence detection
+
+      return false;
+    } catch (error) {
+      console.error('Failed to analyze audio', error);
+      return false;
+    }
+  };
+  useEffect(()=>{
+    if(!isRecording){
+      startRecording();
+      const interval = setInterval(() => {
+        checkRecordingStatus();
+      }, 3000);
+    }
+  },[isRecording]);
+
+
 
   useEffect(() => {
     return soundRef.current
