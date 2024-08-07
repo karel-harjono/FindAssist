@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 import MyWebPage from "../components/MyWebPage";
+
+import MyWebView from '../components/MyWebView';
 import { Icon } from "react-native-elements"; //https://oblador.github.io/react-native-vector-icons/#Entypo
 import constants from "../constants";
 //import ExtractFromOtherWeb from "../server/ExtractFromOtherWeb";
@@ -17,22 +19,28 @@ const BrowserScreen = ({ route }) => {
   const webViewRef = useRef(null);
   const [searchVisible, setSearchVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [textFromWebsite, setTextFromWebsite] = useState('');
+  const [searchedQuery, setSearchedQuery] = useState("");
+  const [isInQuery, toggleIsInQuery] = useState(false);
+  const [searchingNext, setSearchingNext] = useState(0);
+  const [turnOffRecording, setTurnOffRecording] = useState(false);
 
   useEffect(()=>{
 
   },[]);
-
   const handleSearchToggle = () => {
+    setTurnOffRecording(true);
     setSearchVisible(!searchVisible);
     setSearchQuery("");
+    reset();
   };
 
   const handleSearch = () => {
-    console.log(findOccurrences(textFromWebsite,searchQuery));
-    webViewRef.current.injectJavaScript(`
-      
-    `);
+    setSearchedQuery(searchQuery);
+    if(searchQuery.length>0 && !isInQuery){
+      toggleIsInQuery(true);
+    }else if(searchQuery.length>0 && isInQuery){
+      setSearchingNext(searchingNext+1);
+    }
   };
 
   const handleNext = () => {
@@ -47,28 +55,39 @@ const BrowserScreen = ({ route }) => {
     `);
   };
 
-  const findOccurrences = (text, word) => { 
-    const regex = new RegExp(`${word}`, 'gi'); // Create a regex to match the word with word boundaries
-    const matches = [];
-    let match;
-    
-    while ((match = regex.exec(text)) !== null) {
-      matches.push({
-        word: match[0],
-        index: match.index,
-      });
-    }
-  
-    return matches;
+  const handleTextChange = (newText) => {
+    setSearchQuery(newText);
+    reset();
+  };
+
+  const reset = ()=>{
+    setSearchedQuery("");
+    setSearchingNext(0);
+    toggleIsInQuery(false);
   }
+
+  const manualSearch = (query) =>{
+    setSearchedQuery(query);
+    if(searchQuery.length>0 && !isInQuery){
+      toggleIsInQuery(true);
+    }else if(searchQuery.length>0 && isInQuery){
+      setSearchingNext(searchingNext+1);
+    }
+  }
+
+  const handleDataFromChild = (query) => {
+    console.log("browser screen: "+query);
+    manualSearch(query);
+  };
+
 /*
 <MyWebPage style={styles.test}/>
       <SpeechComponent/>
 */
   return (
     <View style={styles.container}>
-      <MyWebPage style={styles.test}/>
-      <SpeechComponent/>
+      <MyWebView url = {url} searchingNext={searchingNext} searchedQuery = {searchedQuery} isSearchOpen={searchVisible}/>
+      <SpeechComponent onDataSend={handleDataFromChild} turnOffRecording={turnOffRecording}/>
       {searchVisible && (
         <View style={styles.searchBar}>
           <TextInput

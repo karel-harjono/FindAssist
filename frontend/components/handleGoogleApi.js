@@ -1,34 +1,12 @@
 import * as FileSystem from 'expo-file-system';
 //import fileExists from "./fileExists";
-import { Asset } from 'expo-asset';
-import { Audio } from 'expo-av';
-import audioFile from '../assets/test1.wav'
+
+
+
 
 const handleGoogleAPI = async (audioURI)=>{
   var transcript1 = '';
 
-    const findMP3 = async ()=>{
-        try{
-          const asset = Asset.fromModule(audioFile);
-          await asset.downloadAsync();
-    
-          //check to see if the asset is correct
-          if (asset.localUri) {
-            const { sound } = await Audio.Sound.createAsync(
-                { uri: asset.localUri }
-            );
-            sound.playAsync(); //comment this out after debugging and development is one.
-            if (sound) {
-                sound.unloadAsync();
-            }
-        } else {
-        }
-          return asset.localUri;
-        }catch{
-          console.error('Error loading asset:', error);
-          throw error;
-        }
-      }
     
       // const transcribeAudio = async (audioContent) =>{
       //   fetch('http://10.0.0.253:3001/')
@@ -80,7 +58,6 @@ const handleGoogleAPI = async (audioURI)=>{
           if(audioURI !=null){  
             const audioContent = await convertAudio(audioURI);
             const transcript = await transcribeAudio(audioContent);
-            //console.log('Transcript:', transcript);
             return transcript;
           }else{
             return null;
