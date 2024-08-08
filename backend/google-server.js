@@ -10,13 +10,23 @@ const client = new SpeechClient();
 router.post('/transcribe', async (req, res) => {
     const audioContent = req.body.audioContent; // Audio content in base64
 
+    // const request = {
+    //     audio: {
+    //         content: audioContent,
+    //     },
+    //     config: {
+    //         encoding: 'LINEAR16', // Adjust based on your audio format
+    //         sampleRateHertz: 48000, // Adjust based on your audio format
+    //         languageCode: 'en-US',
+    //     },
+    // };
     const request = {
         audio: {
             content: audioContent,
         },
         config: {
-            encoding: 'LINEAR16', // Adjust based on your audio format
-            sampleRateHertz: 48000, // Adjust based on your audio format
+            encoding: 'AMR', // Adjust based on your audio format
+            sampleRateHertz: 8000, //FOR .amr files
             languageCode: 'en-US',
         },
     };
