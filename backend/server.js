@@ -9,12 +9,13 @@ dotenv.config();
 import cheerio from 'cheerio';
 import { writeFile } from 'fs/promises';
 
-const pdfPath = 'recipe.pdf';
 import express from 'express';
 import { getDocument } from "pdfjs-dist";
 import googleServer from './google-server.js';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import { readFileSync } from 'fs';
+import embeddingText from './recipes/embeddingString.js';
 
 const app = express();
 const port = 3001;
@@ -26,52 +27,16 @@ app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
 
+app.get('/query', async (req, res) => {
+  const query = req.query.query;
+  console.log(query);
+  const document = await queryDocs(query);
+  res.send(document);
+});
+
 app.get('/', (req, res) => {
   res.send('Welcome to the Speech-to-Text API!');
 });
-
-async function getTextFromPDF(path) {
-    let doc = await getDocument(path).promise;
-    let page1 = await doc.getPage(2);
-    let content = await page1.getTextContent();
-    let strings = content.items.map(function(item) {
-        return item.str;
-    });
-    await writeFile('output.txt', strings);
-    console.log('Text content extracted and written to output.txt');
-    
-    return strings;
-}
-
-async function extractTextFromUrl(url) {
-    try {
-        const response = await fetch(url);
-        const body = await response.text();
-        
-        const $ = cheerio.load(body);
-        
-        // Remove script, style, and other non-visible elements
-        $('script, style, noscript, iframe').remove();
-        
-        // Get text from body, filtering out non-visible elements
-        let text = $('body').find('*').not('script, style').contents()
-            .filter(function() {
-                return this.type === 'text';
-            })
-            .text();
-
-        // Replace multiple newlines and whitespace with a single space
-        // text = text.replace(/\s+/g, ' ').trim();
-
-        // Write the cleaned text to a file
-        await writeFile('output.txt', text);
-
-        console.log('Text content extracted and written to output.txt');
-        return text;
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
 
 // const index = pc.index("pinecone-index")
 // await index.namespace('example-namespace').deleteAll();
@@ -95,21 +60,24 @@ const embedder = new OpenAIEmbeddings(
   }
 );
 
-const splitter = new RecursiveCharacterTextSplitter({
-  chunkSize: 250,
-  chunkOverlap: 50,
-});
-
-// const splitter = new CharacterTextSplitter({
-//   separator: ".",
-//   chunkSize: 250,
-//   chunkOverlap: 50,
+// const splitter = new RecursiveCharacterTextSplitter({
+//   chunkSize: 50,
+//   chunkOverlap: 10,
 // });
 
-const url = 'https://www.maangchi.com/recipe/dububuchim-yangnyeomjang';
+const splitter = new CharacterTextSplitter({
+  separator: "\n",
+  chunkSize: 40,
+  chunkOverlap: 10,
+});
+
+const recipe = "./recipes/recipe2.txt";
 
 const storeDocs = async (text) => {
-  const docs = await splitter.createDocuments([text]);
+  // const docs = await splitter.createDocuments([text]);
+  const docs = embeddingText;
+
+  console.log(docs);
   await PineconeStore.fromDocuments(docs, embedder, {
     pineconeIndex,
     namespace,
@@ -125,8 +93,9 @@ const queryDocs = async (query) => {
   );
   
   /* Search the vector DB independently with metadata filters */
-  const results = await vectorStore.similaritySearch(query, 3);
+  const results = await vectorStore.similaritySearch(query, 5);
   console.log(results);
+  return results;
 }
 
 const deleteAll = async () => {
@@ -139,7 +108,8 @@ const deleteAll = async () => {
 };
 
 async function main() {
-  const text = await getTextFromPDF(pdfPath);
+  const text = readFileSync(recipe, 'utf8');
+  // console.log(text);
   // const text = await extractTextFromUrl(url);
   // await deleteAll();
   // await storeDocs(text);
@@ -148,4 +118,4 @@ async function main() {
 
 main();
 // queryDocs("how long should this be in the oven for?");
-queryDocs("What ingredients are needed?");
+// queryDocs("What ingredients are needed for the pancake?");
