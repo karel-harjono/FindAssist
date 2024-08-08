@@ -23,7 +23,7 @@ const handleGoogleAPI = async (audioURI)=>{
         try {
           console.log("transcribing audio");
           //change the address according to your IP. 
-            const response = await fetch('http://192.16.32.148:3001/speech/transcribe', {
+            const response = await fetch('http://10.0.0.253:3001/speech/transcribe', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

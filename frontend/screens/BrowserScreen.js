@@ -61,17 +61,18 @@ const BrowserScreen = ({ route }) => {
   };
 
   const fetchSimilarDocuments = async () => {
-    const res = await axios.get(`http://192.16.32.148:3001/query?query=${searchQuery}`);
+    const res = await axios.get(`http://10.0.0.253:3001/query?query=${searchQuery}`);
     console.log('resonses', res.data);
     return res.data;
   };
   
   const handleSearch = async () => {
-    console.log('handleSearch');
+    console.log('handleSearch' +searchQuery);
     if (searchQuery === "") {
       return;
     }
     if (isVoiceInterface) {
+      console.log("voiceinterface");
       const documents = await fetchSimilarDocuments();
       setSimilarDocuments(documents);
       const query = documents[searchIdx].metadata.textFromDocument || documents[searchIdx].pageContent;
@@ -174,10 +175,16 @@ const BrowserScreen = ({ route }) => {
     }
   }
 
-  const handleDataFromChild = (query) => {
+  const handleDataFromChild =  (query) => {
     console.log("browser screen: "+query);
     setSearchQuery(query);
+    handleSearch();
   };
+
+  //COMMENT THIS USE EFFECT OUT WHEN DOING MANUAL TASK XD
+  useEffect(()=>{
+    handleSearch();
+  },[searchQuery])
 
 /*
 <MyWebPage style={styles.test}/>
