@@ -1,28 +1,31 @@
-﻿# Expo Project Setup Guide
+# Context-Aware Voice Search for Document Exploration
 
-This guide will walk you through the process of setting up an Expo project from scratch, including installing Node.js and npm, setting up Expo CLI, and running your app on Expo Go.
+## Project Overview
+Voice Agents (VAs) are becoming increasingly prevalent in our daily lives, but they often face challenges with rigidity and limited contextual awareness during hands-free and focus-intensive activities. Our project introduces a novel technique that enhances document search capabilities within voice-based systems. This technique enables context-aware keyword searches through voice commands, combining semantic understanding with the conversational capabilities of VAs.
 
-## Prerequisites
-Before you begin, ensure you have the following software installed on your machine:
+## Key Features
+- **Context-Aware Keyword Searches**: Allows users to perform searches that are contextually relevant to their ongoing tasks.
+- **Semantic Understanding**: Integrates semantic analysis to understand the intent behind user queries, ensuring more accurate search results.
+- **Enhanced Conversational Capabilities**: Improves the interactive experience by enabling more natural and fluid dialogues with the voice agent.
+- **Focus on Usability**: Designed to enhance user efficiency and satisfaction during focus-intensive tasks like reading or cooking.
 
-- [Node.js](https://nodejs.org/en) v20.12.2
-- [npm](https://www.npmjs.com/) 10.7.0
-- install [Expo Go](https://expo.dev/go) from AppStore or Android PlayStore
+## Implementation
+The project is built using a combination of advanced search algorithms and voice interaction technologies. We utilize state-of-the-art NLP tools for semantic understanding and integrate these with popular voice recognition APIs to create a seamless user experience.
 
-You can confirm Node and npm versions by running:
+## Evaluation
+Our evaluation demonstrates significant improvements in usability and task performance. We conducted a series of user studies to measure the impact of our technology on real-world document exploration tasks, the results of which are detailed in our project documentation.
 
-```
-node --version
-npm -v
-```
+## Getting Started
+To get started with this project, clone the repository and follow the setup instructions provided.
 
-## Project Installation Steps
+1. install [Expo Go](https://expo.dev/go)
+2. `npm install`
+3. `npm start`
 
-1. install dependencies `npm i`
-2. run project `npm start`
+[Video Demo](https://drive.google.com/file/d/1t-sg5y0Ye4MF1bWVzpLlsdEVN4XCTPPA/view)
+</br></br>
+<img src="https://github.com/user-attachments/assets/23d8a6aa-bd9b-4dd6-a04b-e35d7fa83471" width="400px">
 
-3. scan the QR code using camera, it should direct you to Expo Go App(if it doesn't show the recipe page, just close expo go and rescan the QR)
 
-it should show a banana bread recipe webpage
-
-<img src="https://github.com/user-attachments/assets/f0ee85de-9081-4456-ad02-51fee318a063" width="300px">
+## License
+- This project is licensed under the MIT License - see the LICENSE.md file for details.
