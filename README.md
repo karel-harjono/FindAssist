@@ -28,4 +28,4 @@ To get started with this project, clone the repository and follow the setup inst
 
 
 ## License
-- This project is licensed under the MIT License - see the LICENSE.md file for details.
+- This project is licensed under the MIT License
