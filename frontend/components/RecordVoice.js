@@ -180,12 +180,12 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
 
     return(
     <View >
-        <TouchableOpacity
+        {/* <TouchableOpacity
             onPress={handlePress}
             style={styles.floatingButton}
         >
             <Icon name="mic" type="feather" color="#fff" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         {recordedUri && <TouchableOpacity style={styles.floatingButton2} title="Play Recording" onPress={() => handleTranscript(recordedUri)} />}
     </View>
     )
