@@ -15,12 +15,12 @@ const recordingOptionsAndroid = {
 // iOS recording options
 const recordingOptionsIOS = {
   ios: {
-    extension: '.amr',
-    outputFormat: Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AMR,
-    audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH,
-    sampleRate: 8000,
+    extension: '.m4a',
+    outputFormat: Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC,
+    audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MEDIUM,  // Lowered quality
+    sampleRate: 16000,  // Adequate for clear speech recognition
     numberOfChannels: 1,
-    bitRate: 12200,
+    bitRate: 64000,  // Lowered bitrate
   },
 };
 

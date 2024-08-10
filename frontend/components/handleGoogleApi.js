@@ -1,5 +1,6 @@
 import * as FileSystem from 'expo-file-system';
 import constants from '../constants';
+import { Platform } from 'react-native';
 //import fileExists from "./fileExists";
 
 
@@ -29,7 +30,7 @@ const handleGoogleAPI = async (audioURI)=>{
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ audioContent }),
+                body: JSON.stringify({ audioContent, os: Platform.OS }),
             });
             const data = await response.json();
             console.log('Transcript:', data.transcript);
