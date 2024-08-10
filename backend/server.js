@@ -9,12 +9,14 @@ dotenv.config();
 import cheerio from 'cheerio';
 import { writeFile } from 'fs/promises';
 
-const pdfPath = 'recipe.pdf';
 import express from 'express';
 import { getDocument } from "pdfjs-dist";
 import googleServer from './google-server.js';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import { readFileSync } from 'fs';
+import embeddingText1 from './recipes/embeddingString1.js';
+import embeddingText2 from './recipes/embeddingString2.js';
 
 const app = express();
 const port = 3001;
@@ -26,68 +28,24 @@ app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
 
+app.get('/query', async (req, res) => {
+  const { query, namespace } = req.query || {};
+  console.log('GET/query');
+  console.log('  Query:', query);
+  console.log('  Namespace:', namespace);
+  const document = await queryDocs(query, namespace);
+  res.send(document);
+});
+
 app.get('/', (req, res) => {
   res.send('Welcome to the Speech-to-Text API!');
 });
-
-async function getTextFromPDF(path) {
-    let doc = await getDocument(path).promise;
-    let page1 = await doc.getPage(2);
-    let content = await page1.getTextContent();
-    let strings = content.items.map(function(item) {
-        return item.str;
-    });
-    await writeFile('output.txt', strings);
-    console.log('Text content extracted and written to output.txt');
-    
-    return strings;
-}
-
-async function extractTextFromUrl(url) {
-    try {
-        const response = await fetch(url);
-        const body = await response.text();
-        
-        const $ = cheerio.load(body);
-        
-        // Remove script, style, and other non-visible elements
-        $('script, style, noscript, iframe').remove();
-        
-        // Get text from body, filtering out non-visible elements
-        let text = $('body').find('*').not('script, style').contents()
-            .filter(function() {
-                return this.type === 'text';
-            })
-            .text();
-
-        // Replace multiple newlines and whitespace with a single space
-        // text = text.replace(/\s+/g, ' ').trim();
-
-        // Write the cleaned text to a file
-        await writeFile('output.txt', text);
-
-        console.log('Text content extracted and written to output.txt');
-        return text;
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-
-// const index = pc.index("pinecone-index")
-// await index.namespace('example-namespace').deleteAll();
-
-// Instantiate a new Pinecone client, which will automatically read the
-// env vars: PINECONE_API_KEY and PINECONE_ENVIRONMENT which come from
-// the Pinecone dashboard at https://app.pinecone.io
-
-// catch an exception of when the environment variables are not set
 
 if (!process.env.PINECONE_INDEX || !process.env.PINECONE_API_KEY || !process.env.OPENAI_API_KEY) {
   throw new Error("API keys requried is missing: PINECONE_INDEX || PINECONE_API_KEY || OPENAI_API_KEY");
 }
 const pinecone = new Pinecone();
 const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX);
-const namespace = "ns1";
 
 const embedder = new OpenAIEmbeddings(
   {
@@ -95,57 +53,43 @@ const embedder = new OpenAIEmbeddings(
   }
 );
 
-const splitter = new RecursiveCharacterTextSplitter({
-  chunkSize: 250,
-  chunkOverlap: 50,
-});
-
-// const splitter = new CharacterTextSplitter({
-//   separator: ".",
-//   chunkSize: 250,
-//   chunkOverlap: 50,
-// });
-
-const url = 'https://www.maangchi.com/recipe/dububuchim-yangnyeomjang';
-
-const storeDocs = async (text) => {
-  const docs = await splitter.createDocuments([text]);
+const storeDocs = async (text, namespace) => {
+  const docs = text;
   await PineconeStore.fromDocuments(docs, embedder, {
     pineconeIndex,
     namespace,
-    maxConcurrency: 5, // Maximum number of batch requests to allow at once. Each batch is 1000 vectors.
+    maxConcurrency: 5,
   });
   console.log("Stored documents in Pinecone");
 };
 
-const queryDocs = async (query) => {
+const queryDocs = async (query, namespace) => {
   const vectorStore = await PineconeStore.fromExistingIndex(
     embedder,
     { pineconeIndex, namespace }
   );
   
-  /* Search the vector DB independently with metadata filters */
-  const results = await vectorStore.similaritySearch(query, 3);
+  const results = await vectorStore.similaritySearch(query, 5);
   console.log(results);
+  return results;
 }
 
-const deleteAll = async () => {
+const deleteAll = async (namespaces) => {
   try {
-    await pineconeIndex.namespace(namespace).deleteAll();
-    console.log("Deleted all documents");
+    namespaces.forEach(async (namespace) => {
+      await pineconeIndex.namespace(namespace).deleteAll();
+      console.log("Deleted all documents in " + namespace);
+    });
   } catch (error) {
     // console.error("Error deleting documents", error);
   }
 };
 
 async function main() {
-  const text = await getTextFromPDF(pdfPath);
-  // const text = await extractTextFromUrl(url);
-  // await deleteAll();
-  // await storeDocs(text);
-  // await queryDocs("grade");
+  // await deleteAll(['ns1']);
+  // await storeDocs(embeddingText1, "recipe1");
+  // await storeDocs(embeddingText2, "recipe2");
 }
 
 main();
-// queryDocs("how long should this be in the oven for?");
-queryDocs("What ingredients are needed?");
+// queryDocs("What ingredients are needed for the pancake?", "recipe2");

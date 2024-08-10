@@ -1,4 +1,5 @@
 import * as FileSystem from 'expo-file-system';
+import constants from '../constants';
 //import fileExists from "./fileExists";
 
 
@@ -23,7 +24,7 @@ const handleGoogleAPI = async (audioURI)=>{
         try {
           console.log("transcribing audio");
           //change the address according to your IP. 
-            const response = await fetch('http://10.0.0.253:3001/speech/transcribe', {
+            const response = await fetch(`http://${constants.LOCAL_IP}:3001/speech/transcribe`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

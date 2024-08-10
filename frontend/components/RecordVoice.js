@@ -91,11 +91,12 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
       console.log(transcript);
       Speech.speak(transcript);
       setRecordedUri('');
-      if(transcript.split(' ')[0].toLowerCase() == "search"){
-        onDataSend(transcript.split(' ')[1]);
-      }
+      //if(transcript.split(' ')[0].toLowerCase() == "search"){
+       // onDataSend(transcript.split(' ')[1]);
+       onDataSend(transcript);
+      //}
     } catch (err) {
-      console.error('Failed to play sound', err);
+      console.error('handleTranscript error:', err);
     }r
   }
   const checkRecordingStatus = async () => {
@@ -179,12 +180,12 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
 
     return(
     <View >
-        <TouchableOpacity
+        {/* <TouchableOpacity
             onPress={handlePress}
             style={styles.floatingButton}
         >
             <Icon name="mic" type="feather" color="#fff" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         {recordedUri && <TouchableOpacity style={styles.floatingButton2} title="Play Recording" onPress={() => handleTranscript(recordedUri)} />}
     </View>
     )
