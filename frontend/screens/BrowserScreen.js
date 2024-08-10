@@ -205,7 +205,8 @@ const BrowserScreen = ({ route }) => {
             placeholder="Search..."
             value={searchQuery}
             onChangeText={setSearchQuery}
-            onSubmitEditing={handleSearch}
+            onSubmitEditing={handleNext}
+            blurOnSubmit={false}
           />
           <TouchableOpacity onPress={handlePrevious} style={styles.iconButton}>
             <Icon name="arrow-left" type="font-awesome" color="#fff" />
