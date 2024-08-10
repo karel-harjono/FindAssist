@@ -97,7 +97,7 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
       //}
     } catch (err) {
       console.error('handleTranscript error:', err);
-    }r
+    }
   }
   const checkRecordingStatus = async () => {
     try {
