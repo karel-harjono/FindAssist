@@ -15,13 +15,19 @@ import audioFile from '../assets/ding.mp3';
 
 
 const RecordVoice = ({turnOffRecording, onDataSend}) =>{
-  const [recording, setRecording] = useState(null);
+  const [recording, setRecording] = useState(false);
   const [recordedUri, setRecordedUri] = useState(null);
   const recordingRef = useRef(null);
   const soundRef = useRef(null);
-  const [isRecordingBackground, setIsRecordingBackground] = useState(true);
+  const [isRecordingBackground, setIsRecordingBackground] = useState(false);
   var interval1;
   const [isSearching, setIsSearching] = useState(false);
+
+  useEffect(() => {
+    if (recording)
+      Speech.speak("what would you like to search?");
+  }, [recording]);
+
 
   const playSound = async ()=>{
 
@@ -58,9 +64,14 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
 
       const { recording } = await Audio.Recording.createAsync(
         recordingOptions,
-        (status) => console.log(status)
+        (status) => {
+          console.log(status);
+          if (status.durationMillis > 0) {
+            console.log('Recording started');
+            setRecording(true);
+          }
+        }
       );
-      setRecording(recording);
       recordingRef.current = recording;
     } catch (err) {
       console.error('Failed to start recording', err);
@@ -72,7 +83,7 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
       await recordingRef.current.stopAndUnloadAsync();
       const uri = recordingRef.current.getURI();
       setRecordedUri(uri);
-      setRecording(null);
+      setRecording(false);
       if(isSearching){
         setIsSearching(false);
       }
@@ -89,7 +100,7 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
 
       const transcript = await handleGoogleAPI(recordingRef.current.getURI());
       console.log(transcript);
-      Speech.speak(transcript);
+      // Speech.speak(transcript);
       setRecordedUri('');
       //if(transcript.split(' ')[0].toLowerCase() == "search"){
        // onDataSend(transcript.split(' ')[1]);
@@ -103,7 +114,7 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
     try {
 
       //await checkAudioFileSize(recordingRef.current.getURI());
-      const transcript = await handleGoogleAPI(recordingRef.current.getURI());
+      // const transcript = await handleGoogleAPI(recordingRef.current.getURI());
       if((transcript.includes("ok")||transcript.includes("okay"))&&transcript.includes("Bob")){
         stopRecording();
         clearInterval(interval1);
@@ -124,49 +135,50 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
     }
   }
 
-  const handlePress = ()=>{
-    if(isRecordingBackground){
-      setIsRecordingBackground(false);
-      console.log("clear interval");
-      clearInterval(interval1);
-      stopRecording();
-      startRecording();
-      setIsSearching(true);
-    }else{
+  const handlePress = async ()=>{
+    // if(isRecordingBackground){
+    //   setIsRecordingBackground(false);
+    //   console.log("clear interval");
+    //   clearInterval(interval1);
+    //   stopRecording();
+    //   startRecording();
+    //   setIsSearching(true);
+    // }else{
       if(recording){
         stopRecording();
+        handleTranscript();
       }else{
         startRecording();
       }
-    }
+    // }
   }
 
-  useEffect(()=>{
-    startRecording();
-    const interval = setInterval(() => {
-      if(isRecordingBackground){
-        checkRecordingStatus();
-      }
+  // useEffect(()=>{
+  //   startRecording();
+  //   const interval = setInterval(() => {
+  //     if(isRecordingBackground){
+  //       checkRecordingStatus();
+  //     }
 
-    }, 3000);
-    const timeout = setTimeout(() => {
-      clearInterval(interval);
-      console.log('Interval cleared after 10 seconds');
-      if(recording &&isRecordingBackground){
-        stopRecording();
-        setIsRecordingBackground(false);
-      }
-    }, 10000);
-    interval1 = interval;
-  },[]);
+  //   }, 3000);
+  //   const timeout = setTimeout(() => {
+  //     clearInterval(interval);
+  //     console.log('Interval cleared after 10 seconds');
+  //     if(recording &&isRecordingBackground){
+  //       stopRecording();
+  //       setIsRecordingBackground(false);
+  //     }
+  //   }, 10000);
+  //   interval1 = interval;
+  // },[]);
 
-  useEffect(()=>{
-    if(turnOffRecording){
-      clearInterval(interval1);
-      stopRecording();
-      setIsRecordingBackground(false);
-    }
-  },[turnOffRecording])
+  // useEffect(()=>{
+  //   if(turnOffRecording){
+  //     clearInterval(interval1);
+  //     stopRecording();
+  //     setIsRecordingBackground(false);
+  //   }
+  // },[turnOffRecording])
 
 
   useEffect(() => {
@@ -180,13 +192,13 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
 
     return(
     <View >
-        {/* <TouchableOpacity
+        <TouchableOpacity
             onPress={handlePress}
             style={styles.floatingButton}
         >
-            <Icon name="mic" type="feather" color="#fff" />
-        </TouchableOpacity> */}
-        {recordedUri && <TouchableOpacity style={styles.floatingButton2} title="Play Recording" onPress={() => handleTranscript(recordedUri)} />}
+            <Icon name="mic" type="feather" color={recording ? "#0f0" : "#fff"}/>
+        </TouchableOpacity>
+        {/* {recordedUri && <TouchableOpacity style={styles.floatingButton2} title="Play Recording" onPress={() => handleTranscript(recordedUri)} />} */}
     </View>
     )
 }
@@ -194,7 +206,7 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
 const styles = StyleSheet.create({
   floatingButton: {
     position: "absolute",
-    bottom: 150,
+    bottom: 60,
     right: 40,
     backgroundColor: constants.THEME.PRIMARY_COLOR,
     borderRadius: 50,

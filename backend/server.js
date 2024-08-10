@@ -86,7 +86,7 @@ const deleteAll = async (namespaces) => {
 };
 
 async function main() {
-  // await deleteAll(['ns1']);
+  // await deleteAll(['recipe1']);
   // await storeDocs(embeddingText1, "recipe1");
   // await storeDocs(embeddingText2, "recipe2");
 }

@@ -17,6 +17,7 @@ import WebView from "react-native-webview";
 import axios from "axios";
 import recipe1 from "./recipe1";
 import recipe2 from "./recipe2";
+import { speak } from "expo-speech";
 
 const injectCSS = `
   const style = document.createElement('style');
@@ -75,11 +76,11 @@ const BrowserScreen = ({ route }) => {
     }
     if (isVoiceInterface) {
       console.log('handleSearch Voice Interface: ' + searchQuery);
-      console.log("voiceinterface");
       const documents = await fetchSimilarDocuments();
       setSimilarDocuments(documents);
       const query = documents[searchIdx].metadata.textFromDocument || documents[searchIdx].pageContent;
       console.log('searchQuery: ', query);
+      speak(query);
       webViewRef.current.injectJavaScript(`
         {
           ${injectCSS}
@@ -181,7 +182,6 @@ const BrowserScreen = ({ route }) => {
   const handleDataFromChild =  (query) => {
     console.log("browser screen: "+query);
     setSearchQuery(query);
-    handleSearch();
   };
 
   //COMMENT THIS USE EFFECT OUT WHEN DOING MANUAL TASK XD
@@ -223,15 +223,13 @@ const BrowserScreen = ({ route }) => {
         </View>
       )}
 
-      {!searchVisible && (
+      {!searchVisible && !isVoiceInterface && (
         <TouchableOpacity
           style={styles.floatingButton}
           onPress={isVoiceInterface ? () => {} : handleSearchToggle}
           disabled={isVoiceInterface}
         >
-          {
-            isVoiceInterface ? <Icon name="mic" type="feather" color="#0f0" /> : <Icon name="search" type="font-awesome" color="#fff" />
-          }
+          <Icon name="search" type="font-awesome" color="#fff" />
         </TouchableOpacity>
       )}
     </View>
