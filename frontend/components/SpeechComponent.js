@@ -5,25 +5,23 @@ import constants from "../constants";
 import RecordVoice from "./RecordVoice";
 import ContinuousSpeechRecognition from "./ContinuousSpeechRecognition";
 
-const SpeechComponent = ({turnOffRecording, onDataSend}) => {
+const SpeechComponent = ({turnOffRecording, onDataSend, endVoice, onRestart}) => {
 
   const handleDataFromChild = (query) => {
-    console.log(2);
     onDataSend(query);
   };
 
   const sendDataToParent = (query) => {
-
     onDataSend(query);
   };
 
-useEffect(()=>{
-  //handleGoogleAPI();
-},[]);
+  const handleOnRestartFromChild = () =>{
+    onRestart()
+  }
 //      
   return (
     <View >
-      <RecordVoice onDataSend={handleDataFromChild} turnOffRecording={turnOffRecording}/>
+      <RecordVoice endVoice={endVoice} onRestart= {handleOnRestartFromChild} onDataSend={handleDataFromChild} turnOffRecording={turnOffRecording}/>
     </View>
   );
 };

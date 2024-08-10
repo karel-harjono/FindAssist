@@ -7,7 +7,7 @@ export default {
     SECONDARY_COLOR: 'dodgerblue',
     ACCENT_COLOR: 'idk',
   },
-  LOCAL_IP: "142.231.91.156",
+  LOCAL_IP: "10.0.0.253",
   CURRENT_RECIPE: "recipe2",
-  IS_VOICE_INTERFACE: false,
+  IS_VOICE_INTERFACE: true,
 }

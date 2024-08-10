@@ -14,7 +14,7 @@ import { Asset } from 'expo-asset';
 import audioFile from '../assets/ding.mp3';
 
 
-const RecordVoice = ({turnOffRecording, onDataSend}) =>{
+const RecordVoice = ({turnOffRecording, onDataSend, endVoice, onRestart}) =>{
   const [recording, setRecording] = useState(null);
   const [recordedUri, setRecordedUri] = useState(null);
   const recordingRef = useRef(null);
@@ -28,7 +28,6 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
     try{
       const asset = Asset.fromModule(audioFile);
       await asset.downloadAsync();
-      console.log("dd");
   
       //check to see if the asset is correct
       if (asset.localUri) {
@@ -83,22 +82,23 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
 
   async function handleTranscript(uri) {
     try {
-      // const { sound } = await Audio.Sound.createAsync({ uri });
-      // soundRef.current = sound;
-      // await sound.playAsync();
 
       const transcript = await handleGoogleAPI(recordingRef.current.getURI());
       console.log(transcript);
-      Speech.speak(transcript);
+      //Speech.speak(transcript);
       setRecordedUri('');
-      //if(transcript.split(' ')[0].toLowerCase() == "search"){
-       // onDataSend(transcript.split(' ')[1]);
        onDataSend(transcript);
+        const timeout = setTimeout(() => {
+          restart();
+          onRestart();
+            }, 1500);
       //}
     } catch (err) {
       console.error('handleTranscript error:', err);
     }r
   }
+
+
   const checkRecordingStatus = async () => {
     try {
 
@@ -108,15 +108,16 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
         stopRecording();
         clearInterval(interval1);
         setIsRecordingBackground(false);
-        Speech.speak("what would you like to search?");
-        setTimeout(() => {
-          setIsSearching(true);
-          startRecording();
-          const timeout = setTimeout(() => {
-            stopRecording();
-            handleTranscript(recordedUri);
-          }, 5000);
-        }, 2500);
+        Speech.speak("what would you like to search?", {
+          onDone: ()=>{
+            setIsSearching(true);
+            startRecording();
+            // const timeout = setTimeout(() => {
+            //   stopRecording();
+            //   handleTranscript(recordedUri);
+            // }, 5000);
+          }
+        });
       }
       console.log("record transcript:"+transcript);
     }catch(err){
@@ -139,6 +140,17 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
         startRecording();
       }
     }
+  }
+
+  const restart = () =>{
+    setIsRecordingBackground(true);
+    startRecording();
+    const interval = setInterval(() => {
+      //if(isRecordingBackground){
+        checkRecordingStatus();
+      //}
+    }, 3000);
+    interval1 = interval;
   }
 
   useEffect(()=>{
@@ -177,6 +189,14 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
         }
       : undefined;
   }, []);
+
+  useEffect(()=>{
+    if(endVoice){
+      stopRecording();
+      handleTranscript(recordedUri);
+    }
+  },[endVoice])
+
 
     return(
     <View >

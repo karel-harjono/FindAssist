@@ -17,6 +17,7 @@ import WebView from "react-native-webview";
 import axios from "axios";
 import recipe1 from "./recipe1";
 import recipe2 from "./recipe2";
+import * as Speech from 'expo-speech';
 
 const injectCSS = `
   const style = document.createElement('style');
@@ -46,6 +47,7 @@ const BrowserScreen = ({ route }) => {
   const [searchIdx, setSearchIdx] = useState(0);
   const [isVoiceInterface, setIsVoiceInterface] = useState(false);
   const [recipe, setRecipe] = useState("");
+  const [endVoice, setEndVoice] = useState(false);
 
   useEffect(() => {
     setIsVoiceInterface(constants.IS_VOICE_INTERFACE);
@@ -80,6 +82,7 @@ const BrowserScreen = ({ route }) => {
       setSimilarDocuments(documents);
       const query = documents[searchIdx].metadata.textFromDocument || documents[searchIdx].pageContent;
       console.log('searchQuery: ', query);
+      Speech.speak(query);
       webViewRef.current.injectJavaScript(`
         {
           ${injectCSS}
@@ -181,8 +184,16 @@ const BrowserScreen = ({ route }) => {
   const handleDataFromChild =  (query) => {
     console.log("browser screen: "+query);
     setSearchQuery(query);
-    handleSearch();
+    //handleSearch();
   };
+
+  const handleMic = () =>{
+    setEndVoice(true);
+  }
+
+  const handleOnRestartFromChild = () =>{
+    setEndVoice(false);
+  }
 
   //COMMENT THIS USE EFFECT OUT WHEN DOING MANUAL TASK XD
   useEffect(()=>{
@@ -196,7 +207,7 @@ const BrowserScreen = ({ route }) => {
   return (
     <View style={styles.container}>
       <WebView ref={webViewRef} source={{ html: recipe }} style={styles.webview} javaScriptEnabled={true} />
-      {isVoiceInterface && <SpeechComponent onDataSend={handleDataFromChild} turnOffRecording={turnOffRecording}/>}
+      {isVoiceInterface && <SpeechComponent onRestart={handleOnRestartFromChild} endVoice={endVoice} onDataSend={handleDataFromChild} turnOffRecording={turnOffRecording}/>}
       {searchVisible && (
         <View style={styles.searchBar}>
           <TextInput
@@ -226,14 +237,14 @@ const BrowserScreen = ({ route }) => {
       {!searchVisible && (
         <TouchableOpacity
           style={styles.floatingButton}
-          onPress={isVoiceInterface ? () => {} : handleSearchToggle}
-          disabled={isVoiceInterface}
+          onPress={isVoiceInterface ? handleMic : handleSearchToggle}
         >
           {
             isVoiceInterface ? <Icon name="mic" type="feather" color="#0f0" /> : <Icon name="search" type="font-awesome" color="#fff" />
           }
         </TouchableOpacity>
       )}
+      
     </View>
   );
 };
@@ -250,7 +261,19 @@ const styles = StyleSheet.create({
   },
   floatingButton: {
     position: "absolute",
-    bottom: 60,
+    bottom: 90,
+    right: 40,
+    backgroundColor: constants.THEME.PRIMARY_COLOR,
+    borderRadius: 50,
+    width: 60,
+    height: 60,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 8,
+  },
+  floatingButton1: {
+    position: "absolute",
+    bottom: 130,
     right: 40,
     backgroundColor: constants.THEME.PRIMARY_COLOR,
     borderRadius: 50,
