@@ -5,7 +5,7 @@ import constants from "../constants";
 import RecordVoice from "./RecordVoice";
 import ContinuousSpeechRecognition from "./ContinuousSpeechRecognition";
 
-const SpeechComponent = ({turnOffRecording, onDataSend}) => {
+const SpeechComponent = ({turnOffRecording, onDataSend, endVoice}) => {
 
   const handleDataFromChild = (query) => {
     console.log(2);
@@ -23,7 +23,7 @@ useEffect(()=>{
 //      
   return (
     <View >
-      <RecordVoice onDataSend={handleDataFromChild} turnOffRecording={turnOffRecording}/>
+      <RecordVoice onDataSend={handleDataFromChild} turnOffRecording={turnOffRecording} endVoice={endVoice}/>
     </View>
   );
 };

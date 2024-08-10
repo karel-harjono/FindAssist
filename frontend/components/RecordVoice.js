@@ -13,8 +13,9 @@ import { Asset } from 'expo-asset';
 
 import audioFile from '../assets/ding.mp3';
 
+import Stopwatch from "./Stopwatch";
 
-const RecordVoice = ({turnOffRecording, onDataSend}) =>{
+const RecordVoice = ({turnOffRecording, onDataSend, endVoice}) =>{
   const [recording, setRecording] = useState(null);
   const [recordedUri, setRecordedUri] = useState(null);
   const recordingRef = useRef(null);
@@ -22,6 +23,7 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
   const [isRecordingBackground, setIsRecordingBackground] = useState(true);
   var interval1;
   const [isSearching, setIsSearching] = useState(false);
+  const [isTimeRunning, setIsTimeRunning] = useState(false);
 
   const playSound = async ()=>{
 
@@ -90,6 +92,7 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
       const transcript = await handleGoogleAPI(recordingRef.current.getURI());
       console.log(transcript);
       Speech.speak(transcript);
+      setIsTimeRunning(false);
       setRecordedUri('');
       if(transcript.split(' ')[0].toLowerCase() == "search"){
         onDataSend(transcript.split(' ')[1]);
@@ -100,22 +103,24 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
   }
   const checkRecordingStatus = async () => {
     try {
-
       //await checkAudioFileSize(recordingRef.current.getURI());
       const transcript = await handleGoogleAPI(recordingRef.current.getURI());
       if((transcript.includes("ok")||transcript.includes("okay"))&&transcript.includes("Bob")){
         stopRecording();
         clearInterval(interval1);
         setIsRecordingBackground(false);
-        Speech.speak("what would you like to search?");
-        setTimeout(() => {
-          setIsSearching(true);
-          startRecording();
-          const timeout = setTimeout(() => {
-            stopRecording();
-            handleTranscript(recordedUri);
-          }, 5000);
-        }, 2500);
+        Speech.speak("what would you like to search?", {
+          onDone: ()=>{
+            setIsTimeRunning(true);
+            setIsSearching(true);
+            startRecording();
+            // const timeout = setTimeout(() => {
+            //   stopRecording();
+            //   handleTranscript(recordedUri);
+            // }, 5000);
+          }
+        });
+
       }
       console.log("record transcript:"+transcript);
     }catch(err){
@@ -144,6 +149,7 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
     startRecording();
     const interval = setInterval(() => {
       if(isRecordingBackground){
+        //setIsTimeRunning(true);
         checkRecordingStatus();
       }
 
@@ -153,12 +159,14 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
       console.log('Interval cleared after 10 seconds');
       if(recording &&isRecordingBackground){
         stopRecording();
+        setIsTimeRunning(false);
         setIsRecordingBackground(false);
       }
     }, 10000);
     interval1 = interval;
   },[]);
 
+  //the UseEffect Below might be USELESS CODE.
   useEffect(()=>{
     if(turnOffRecording){
       clearInterval(interval1);
@@ -177,6 +185,13 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
       : undefined;
   }, []);
 
+  useEffect(()=>{
+    if(endVoice){
+      stopRecording();
+      handleTranscript(recordedUri);
+    }
+  },[endVoice])
+
     return(
     <View >
         <TouchableOpacity
@@ -186,6 +201,7 @@ const RecordVoice = ({turnOffRecording, onDataSend}) =>{
             <Icon name="mic" type="feather" color="#fff" />
         </TouchableOpacity>
         {recordedUri && <TouchableOpacity style={styles.floatingButton2} title="Play Recording" onPress={() => handleTranscript(recordedUri)} />}
+        <Stopwatch isTimeRunning = {isTimeRunning}/>
     </View>
     )
 }
