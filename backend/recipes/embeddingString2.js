@@ -20,7 +20,7 @@ export default [
     {"pageContent": "what to do if cookies do not spread enough?", "metadata": {"textFromDocument": "Check if your baking soda is active and ensure ingredients are at room temperature", "lineNumber": 50}},
 
     // Tomato Soup
-    {"pageContent": "how many tomatoes do I need for Tomato Soup?", "metadata": {"textFromDocument": "4 diced tomatoes (undrained)", "lineNumber": 42}},
+    {"pageContent": "how many tomatoes do I need for Tomato Soup?", "metadata": {"textFromDocument": "4 diced tomatoes", "lineNumber": 42}},
     {"pageContent": "how much butter do I need for Tomato Soup?", "metadata": {"textFromDocument": "4 tablespoons butter", "lineNumber": 43}},
     {"pageContent": "how many sausages do I need for Tomato Soup?", "metadata": {"textFromDocument": "10 sausages", "lineNumber": 44}},
     {"pageContent": "how much heavy cream do I need for Tomato Soup?", "metadata": {"textFromDocument": "1 cup heavy cream", "lineNumber": 45}},
