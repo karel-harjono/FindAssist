@@ -3,6 +3,9 @@
 ## Project Overview
 Voice Agents (VAs) are becoming increasingly prevalent in our daily lives, but they often face challenges with rigidity and limited contextual awareness during hands-free and focus-intensive activities. Our project introduces a novel technique that enhances document search capabilities within voice-based systems. This technique enables context-aware keyword searches through voice commands, combining semantic understanding with the conversational capabilities of VAs.
 
+## Full Research Paper:
+[FindAssist: Assessing Contextual Keyword Search in Voice Agents](./FindAssist-%20Assessing%20Contextual%20Keyword%20Search%20in%20Voice%20Agents.pdf)
+
 ## Key Features
 - **Context-Aware Keyword Searches**: Allows users to perform searches that are contextually relevant to their ongoing tasks.
 - **Semantic Understanding**: Integrates semantic analysis to understand the intent behind user queries, ensuring more accurate search results.
