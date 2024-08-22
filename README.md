@@ -6,6 +6,8 @@ Voice Agents (VAs) are becoming increasingly prevalent in our daily lives, but t
 ## Full Research Paper:
 [FindAssist: Assessing Contextual Keyword Search in Voice Agents](./FindAssist-%20Assessing%20Contextual%20Keyword%20Search%20in%20Voice%20Agents.pdf)
 
+[Video Demo](https://drive.google.com/file/d/1t-sg5y0Ye4MF1bWVzpLlsdEVN4XCTPPA/view)
+
 ## Key Features
 - **Context-Aware Keyword Searches**: Allows users to perform searches that are contextually relevant to their ongoing tasks.
 - **Semantic Understanding**: Integrates semantic analysis to understand the intent behind user queries, ensuring more accurate search results.
@@ -25,7 +27,6 @@ To get started with this project, clone the repository and follow the setup inst
 2. `npm install`
 3. `npm start`
 
-[Video Demo](https://drive.google.com/file/d/1t-sg5y0Ye4MF1bWVzpLlsdEVN4XCTPPA/view)
 </br></br>
 <img src="https://github.com/user-attachments/assets/23d8a6aa-bd9b-4dd6-a04b-e35d7fa83471" width="400px">
 
